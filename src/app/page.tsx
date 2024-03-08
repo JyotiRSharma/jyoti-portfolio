@@ -1,5 +1,6 @@
 import ModeToggle from "@/components/ModeToggle";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
     return (
@@ -18,7 +19,21 @@ export default function Home() {
                         delving into Machine Learning to drive innovation and
                         solve complex challenges. He previously worked at Wipro,
                         TechMahindra and on Fortune 500 sites. You can find him
-                        on LinkedIn or Twitter.
+                        on
+                        <Link
+                            href="https://www.linkedin.com/in/jrsharma11/"
+                            target="_blank"
+                        >
+                            <span className="text-blue-400"> LinkedIn </span>
+                        </Link>
+                        or
+                        <Link
+                            href="https://twitter.com/JyotiRanjanSha9"
+                            target="_blank"
+                        >
+                            <span className="text-blue-400"> Twitter</span>
+                        </Link>
+                        .
                     </p>
                 </div>
 
