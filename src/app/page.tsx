@@ -1,12 +1,10 @@
-import ModeToggle from "@/components/ModeToggle";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
     return (
         <main className="">
-            <div className="mx-auto my-0 flex max-w-[75rem] flex-col gap-12 px-10 py-20 lg:flex-row">
-                <ModeToggle></ModeToggle>
+            <div className="mx-auto my-0 flex max-w-desktop flex-col gap-12 px-10 py-10 lg:flex-row">
                 <div className="flex flex-col gap-3">
                     <h1 className="text-5xl font-bold">Jyoti Ranjan Sharma</h1>
                     <h3 className="text-xl font-semibold text-slate-500">
