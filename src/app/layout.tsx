@@ -3,12 +3,13 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "jrsharma | portfolio",
-    description: "Jyoti Ranjan Sharma's Portfolio",
+    title: "jrsharma",
+    description: "Jyoti Ranjan Sharma's Zone",
 };
 
 export default function RootLayout({
@@ -25,6 +26,7 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <Navbar></Navbar>
                     {children}
                     <SpeedInsights></SpeedInsights>
                 </ThemeProvider>
