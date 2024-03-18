@@ -10,7 +10,7 @@ export default function Home() {
                     <h3 className="text-xl font-semibold text-slate-500">
                         Software Engineer
                     </h3>
-                    <p>
+                    <p key={"intro"}>
                         Jyotiranjan is a Software Engineer specializing in
                         Next.js development and Machine Learning. With Next.js
                         he builds fast and intuitive web applications, while
@@ -40,7 +40,7 @@ export default function Home() {
                     alt="Jyoti Ranjan"
                     height={768}
                     width={1023}
-                    className="rounded-md shadow-inner"
+                    className="aspect-square rounded-md shadow-inner"
                 ></Image>
             </div>
         </main>
