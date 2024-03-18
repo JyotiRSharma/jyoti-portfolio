@@ -13,6 +13,7 @@ const Chat = () => {
         isLoading,
         setMessages,
     } = useChat();
+
     const formRef = useRef<HTMLDivElement>(null);
     const scrollToBottom = () => {
         if (formRef.current) {
