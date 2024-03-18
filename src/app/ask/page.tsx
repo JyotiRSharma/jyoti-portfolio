@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useChat } from "ai/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const Chat = () => {
     const {
@@ -13,6 +13,16 @@ const Chat = () => {
         isLoading,
         setMessages,
     } = useChat();
+    const formRef = useRef<HTMLDivElement>(null);
+    const scrollToBottom = () => {
+        if (formRef.current) {
+            formRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     useEffect(() => {
         setMessages([
@@ -24,10 +34,10 @@ const Chat = () => {
         ]);
     }, []);
     return (
-        <div className="mx-auto flex h-screen max-w-md flex-col justify-between px-4  py-12">
+        <div className="mx-auto flex h-[85vh] max-w-md flex-col justify-between overflow-y-auto px-4 py-4">
             <div
                 id="messages-div"
-                className="flex min-h-64 flex-col gap-3 overflow-y-auto "
+                className="row-span-4 flex flex-col gap-3 overflow-y-auto"
             >
                 {messages.map((m) => (
                     <div
@@ -46,6 +56,7 @@ const Chat = () => {
                         {m.content}
                     </div>
                 ))}
+                <div id="message-end" ref={formRef}></div>
             </div>
             <div className="my-6">
                 {isLoading ? (
@@ -53,10 +64,10 @@ const Chat = () => {
                 ) : (
                     <form
                         onSubmit={handleSubmit}
-                        className="flex justify-center gap-3"
+                        className="flex w-full justify-center gap-3"
                     >
                         <input
-                            className="w-full rounded-md p-2 dark:text-slate-200"
+                            className="h-10 w-full rounded-md p-2 dark:text-slate-200"
                             value={input}
                             placeholder="Say something"
                             onChange={handleInputChange}
