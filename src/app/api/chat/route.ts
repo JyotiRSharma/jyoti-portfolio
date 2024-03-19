@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 
 import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "langchain/prompts";
-import { StringOutputParser } from "langchain/schema/output_parser";
+import { BytesOutputParser } from "langchain/schema/output_parser";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Document } from "langchain/document";
@@ -60,13 +60,12 @@ export async function POST(req: NextRequest) {
     AI:`;
 
     const prompt = PromptTemplate.fromTemplate(TEMPLATE);
-    const outputParser = new StringOutputParser();
+    const outputParser = new BytesOutputParser();
     const chain = prompt.pipe(model).pipe(outputParser);
 
     const stream = await chain.stream({
         chat_history: formattedPreviousMessages.join("\n"),
         input: currentMessageContent,
     });
-
     return new StreamingTextResponse(stream);
 }
