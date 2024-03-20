@@ -1,10 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Message } from "ai";
 import { useChat } from "ai/react";
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { ChangeEvent, FormEvent, useEffect, useRef } from "react";
+
+const NoSSRUserInput = dynamic(() => import("@/components/UserInput"), {
+    ssr: false,
+});
 
 const Chat = () => {
     const {
@@ -25,30 +28,28 @@ const Chat = () => {
 
     useEffect(() => {
         let prevMessages: Message[] = [];
-        if (typeof window !== "undefined") {
-            if (localStorage.getItem("messages")?.length) {
-                prevMessages = JSON.parse(localStorage.getItem("messages")!);
-                setMessages(prevMessages);
-            } else {
-                setMessages([
-                    {
-                        id: "00",
-                        role: "assistant",
-                        content: "How may I assist you?",
-                    },
-                ]);
-            }
+        if (localStorage.getItem("messages")?.length) {
+            prevMessages = JSON.parse(localStorage.getItem("messages")!);
+            setMessages(prevMessages);
+        } else {
+            setMessages([
+                {
+                    id: "00",
+                    role: "assistant",
+                    content: "How may I assist you?",
+                },
+            ]);
+        }
 
-            if (!localStorage.getItem("count")) {
-                localStorage.setItem("count", "0");
-            }
+        if (!localStorage.getItem("count")) {
+            localStorage.setItem("count", "0");
         }
     }, []);
 
     useEffect(() => {
         scrollToBottom();
 
-        if (messages.length && typeof window !== "undefined") {
+        if (messages.length) {
             localStorage.setItem("messages", JSON.stringify(messages));
         }
     }, [messages]);
@@ -78,7 +79,7 @@ const Chat = () => {
                 ))}
                 <div id="message-end" ref={formRef}></div>
             </div>
-            <div className="my-6">
+            <div key={"bottomSection"} className="my-6">
                 <BottomSection
                     handleInputChange={handleInputChange}
                     handleSubmit={handleSubmit}
@@ -104,64 +105,12 @@ function BottomSection(
         return "Thinking....";
     }
     return (
-        <UserInput
+        <NoSSRUserInput
             handleSubmit={props.handleSubmit}
             handleInputChange={props.handleInputChange}
             input={props.input}
         />
     );
-}
-
-function UserInput(
-    props: Readonly<{
-        handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
-        input: string;
-        handleInputChange: (
-            e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
-        ) => void;
-    }>,
-) {
-    let initialCount = 0;
-    if (typeof window !== "undefined") {
-        initialCount = Number(localStorage.getItem("count"));
-    }
-    const [count, setCount] = useState(initialCount);
-
-    if (count >= 2) {
-        return <UserWarning />;
-    }
-    return (
-        <form
-            onSubmit={(e) => {
-                props.handleSubmit(e);
-                setCount((prevCount) => {
-                    const currentCount = prevCount + 1;
-                    if (typeof window !== "undefined") {
-                        localStorage.setItem("count", currentCount.toString());
-                    }
-                    return currentCount;
-                });
-            }}
-            className="flex w-full flex-col justify-center gap-2"
-        >
-            <div className="text-right text-sm">{count} / 2</div>
-            <div className="flex gap-3">
-                <Input
-                    className="w-full"
-                    value={props.input}
-                    placeholder="Say something"
-                    onChange={props.handleInputChange}
-                />
-                <Button type="submit" className="">
-                    Send
-                </Button>
-            </div>
-        </form>
-    );
-}
-
-function UserWarning() {
-    return <div>You have maxed out Jarvis. Ask Jyoti for help. 🥹</div>;
 }
 
 export default function Ask() {

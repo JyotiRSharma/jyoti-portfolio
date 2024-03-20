@@ -41,6 +41,7 @@ export default function Home() {
                     height={768}
                     width={1023}
                     className="aspect-square rounded-md shadow-inner"
+                    priority={true}
                 ></Image>
             </div>
         </main>
