@@ -1,8 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Message } from "ai";
 import { useChat } from "ai/react";
-import { useEffect, useRef } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 
 const Chat = () => {
     const {
@@ -22,18 +24,32 @@ const Chat = () => {
     };
 
     useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+        let prevMessages: Message[] = [];
+        if (localStorage.getItem("messages")?.length) {
+            prevMessages = JSON.parse(localStorage.getItem("messages")!);
+            setMessages(prevMessages);
+        } else {
+            setMessages([
+                {
+                    id: "00",
+                    role: "assistant",
+                    content: "How may I assist you?",
+                },
+            ]);
+        }
+
+        if (!localStorage.getItem("count")) {
+            localStorage.setItem("count", "0");
+        }
+    }, []);
 
     useEffect(() => {
-        setMessages([
-            {
-                id: "00",
-                role: "assistant",
-                content: "How may I assist you?",
-            },
-        ]);
-    }, []);
+        scrollToBottom();
+        if (messages.length) {
+            localStorage.setItem("messages", JSON.stringify(messages));
+        }
+    }, [messages]);
+
     return (
         <div className="mx-auto flex h-[85vh] max-w-md flex-col justify-between overflow-y-auto px-4 py-4">
             <div
@@ -60,28 +76,84 @@ const Chat = () => {
                 <div id="message-end" ref={formRef}></div>
             </div>
             <div className="my-6">
-                {isLoading ? (
-                    "...."
-                ) : (
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex w-full justify-center gap-3"
-                    >
-                        <input
-                            className="h-10 w-full rounded-md p-2 dark:text-slate-200"
-                            value={input}
-                            placeholder="Say something"
-                            onChange={handleInputChange}
-                        />
-                        <Button type="submit" className="">
-                            Send
-                        </Button>
-                    </form>
-                )}
+                <BottomSection
+                    handleInputChange={handleInputChange}
+                    handleSubmit={handleSubmit}
+                    input={input}
+                    isLoading={isLoading}
+                />
             </div>
         </div>
     );
 };
+
+function BottomSection(
+    props: Readonly<{
+        isLoading: boolean;
+        handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+        input: string;
+        handleInputChange: (
+            e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+        ) => void;
+    }>,
+) {
+    if (props.isLoading) {
+        return "Thinking....";
+    }
+    return (
+        <UserInput
+            handleSubmit={props.handleSubmit}
+            handleInputChange={props.handleInputChange}
+            input={props.input}
+        />
+    );
+}
+
+function UserInput(
+    props: Readonly<{
+        handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+        input: string;
+        handleInputChange: (
+            e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+        ) => void;
+    }>,
+) {
+    const [count, setCount] = useState(Number(localStorage.getItem("count")));
+
+    if (count >= 2) {
+        return <UserWarning />;
+    }
+    return (
+        <form
+            onSubmit={(e) => {
+                props.handleSubmit(e);
+                setCount((prevCount) => {
+                    const currentCount = prevCount + 1;
+                    localStorage.setItem("count", currentCount.toString());
+                    return currentCount;
+                });
+            }}
+            className="flex w-full flex-col justify-center gap-2"
+        >
+            <div className="text-right text-sm">{count} / 2</div>
+            <div className="flex gap-3">
+                <Input
+                    className="w-full"
+                    value={props.input}
+                    placeholder="Say something"
+                    onChange={props.handleInputChange}
+                />
+                <Button type="submit" className="">
+                    Send
+                </Button>
+            </div>
+        </form>
+    );
+}
+
+function UserWarning() {
+    return "You have maxed out Jarvis. Ask Jyoti for help. 🥹";
+}
 
 export default function Ask() {
     return <Chat />;
