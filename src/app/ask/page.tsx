@@ -1,10 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Message } from "ai";
 import { useChat } from "ai/react";
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { ChangeEvent, FormEvent, useEffect, useRef } from "react";
+
+const NoSSRUserInput = dynamic(() => import("@/components/UserInput"), {
+    ssr: false,
+});
 
 const Chat = () => {
     const {
@@ -101,58 +104,12 @@ function BottomSection(
         return "Thinking....";
     }
     return (
-        <UserInput
+        <NoSSRUserInput
             handleSubmit={props.handleSubmit}
             handleInputChange={props.handleInputChange}
             input={props.input}
         />
     );
-}
-
-function UserInput(
-    props: Readonly<{
-        handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
-        input: string;
-        handleInputChange: (
-            e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
-        ) => void;
-    }>,
-) {
-    const [count, setCount] = useState(Number(localStorage.getItem("count")));
-
-    if (count >= 2) {
-        return <UserWarning />;
-    }
-    return (
-        <form
-            onSubmit={(e) => {
-                props.handleSubmit(e);
-                setCount((prevCount) => {
-                    const currentCount = prevCount + 1;
-                    localStorage.setItem("count", currentCount.toString());
-                    return currentCount;
-                });
-            }}
-            className="flex w-full flex-col justify-center gap-2"
-        >
-            <div className="text-right text-sm">{count} / 2</div>
-            <div className="flex gap-3">
-                <Input
-                    className="w-full"
-                    value={props.input}
-                    placeholder="Say something"
-                    onChange={props.handleInputChange}
-                />
-                <Button type="submit" className="">
-                    Send
-                </Button>
-            </div>
-        </form>
-    );
-}
-
-function UserWarning() {
-    return "You have maxed out Jarvis. Ask Jyoti for help. 🥹";
 }
 
 export default function Ask() {
