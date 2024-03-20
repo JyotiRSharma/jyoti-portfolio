@@ -25,28 +25,30 @@ const Chat = () => {
 
     useEffect(() => {
         let prevMessages: Message[] = [];
+        if (typeof window !== "undefined") {
+            if (localStorage.getItem("messages")?.length) {
+                prevMessages = JSON.parse(localStorage.getItem("messages")!);
+                setMessages(prevMessages);
+            } else {
+                setMessages([
+                    {
+                        id: "00",
+                        role: "assistant",
+                        content: "How may I assist you?",
+                    },
+                ]);
+            }
 
-        if (localStorage.getItem("messages")?.length) {
-            prevMessages = JSON.parse(localStorage.getItem("messages")!);
-            setMessages(prevMessages);
-        } else {
-            setMessages([
-                {
-                    id: "00",
-                    role: "assistant",
-                    content: "How may I assist you?",
-                },
-            ]);
-        }
-
-        if (!localStorage.getItem("count")) {
-            localStorage.setItem("count", "0");
+            if (!localStorage.getItem("count")) {
+                localStorage.setItem("count", "0");
+            }
         }
     }, []);
 
     useEffect(() => {
         scrollToBottom();
-        if (messages.length) {
+
+        if (messages.length && typeof window !== "undefined") {
             localStorage.setItem("messages", JSON.stringify(messages));
         }
     }, [messages]);
@@ -120,7 +122,7 @@ function UserInput(
     }>,
 ) {
     let initialCount = 0;
-    if (typeof window !== undefined) {
+    if (typeof window !== "undefined") {
         initialCount = Number(localStorage.getItem("count"));
     }
     const [count, setCount] = useState(initialCount);
@@ -134,7 +136,7 @@ function UserInput(
                 props.handleSubmit(e);
                 setCount((prevCount) => {
                     const currentCount = prevCount + 1;
-                    if (typeof window !== undefined) {
+                    if (typeof window !== "undefined") {
                         localStorage.setItem("count", currentCount.toString());
                     }
                     return currentCount;
@@ -159,7 +161,7 @@ function UserInput(
 }
 
 function UserWarning() {
-    return "You have maxed out Jarvis. Ask Jyoti for help. 🥹";
+    return <div>You have maxed out Jarvis. Ask Jyoti for help. 🥹</div>;
 }
 
 export default function Ask() {
