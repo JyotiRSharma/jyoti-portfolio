@@ -48,7 +48,6 @@ const Chat = () => {
 
     useEffect(() => {
         scrollToBottom();
-
         if (messages.length) {
             localStorage.setItem("messages", JSON.stringify(messages));
         }
@@ -79,7 +78,7 @@ const Chat = () => {
                 ))}
                 <div id="message-end" ref={formRef}></div>
             </div>
-            <div key={"bottomSection"} className="my-6">
+            <div className="my-6">
                 <BottomSection
                     handleInputChange={handleInputChange}
                     handleSubmit={handleSubmit}
