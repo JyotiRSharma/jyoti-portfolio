@@ -25,6 +25,7 @@ const Chat = () => {
 
     useEffect(() => {
         let prevMessages: Message[] = [];
+
         if (localStorage.getItem("messages")?.length) {
             prevMessages = JSON.parse(localStorage.getItem("messages")!);
             setMessages(prevMessages);
@@ -118,7 +119,11 @@ function UserInput(
         ) => void;
     }>,
 ) {
-    const [count, setCount] = useState(Number(localStorage.getItem("count")));
+    let initialCount = 0;
+    if (typeof window !== undefined) {
+        initialCount = Number(localStorage.getItem("count"));
+    }
+    const [count, setCount] = useState(initialCount);
 
     if (count >= 2) {
         return <UserWarning />;
@@ -129,7 +134,9 @@ function UserInput(
                 props.handleSubmit(e);
                 setCount((prevCount) => {
                     const currentCount = prevCount + 1;
-                    localStorage.setItem("count", currentCount.toString());
+                    if (typeof window !== undefined) {
+                        localStorage.setItem("count", currentCount.toString());
+                    }
                     return currentCount;
                 });
             }}
